@@ -81,24 +81,44 @@ jobs:
                 git push
 
     CD:
-        runs-on: ubuntu-latest
-        needs: [update-newtag-in-helm-chart]
-        steps:
-            - name: checkout the code
-              uses: actions/checkout@v4
-            - name: set up the kubectl aws eks
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-                aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-                aws-region: us-east-1
-            - name: verify cluster access
-              run: kubectl get nodes
-            - name: update the kubecofig
-              run: aws eks update-kubeconfig --region us-east-1 --name ${{secrets.EKS_CLUSTER_NAME}}
-            - name: deploy the helm chart
-              run: |
-                helm upgrade --install go-web-app-release helm/go-web-app-chart --namespace go-web-app-namespace --create-namespace
-                helm repo update
+      runs-on: ubuntu-latest
+      needs: update-newtag-in-helm-chart
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-1
+
+        - name: Install kubectl
+          uses: azure/setup-kubectl@v4
+          with:
+            version: v1.29.0
+
+        - name: Install Helm
+          uses: azure/setup-helm@v4
+          with:
+            version: v3.14.0
+
+        - name: Update kubeconfig
+          run: |
+            aws eks update-kubeconfig \
+            --region us-east-1 \
+            --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+        - name: Verify cluster access
+          run: kubectl get nodes
+
+        - name: Deploy Helm chart
+          run: |
+            helm upgrade --install go-web-app-release \
+            helm/go-web-app-chart \
+            --namespace go-web-app-namespace \
+            --create-namespace
+
                 
 
