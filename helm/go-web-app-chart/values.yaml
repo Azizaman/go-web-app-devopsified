@@ -5,7 +5,7 @@ app:
 
 image:
   repository: azizaman/go-web-app
-  tag: v2
+  tag: "20675487531"
   pullPolicy: IfNotPresent
 
 containerPort: 8080
