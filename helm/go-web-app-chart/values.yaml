@@ -1,0 +1,23 @@
+replicaCount: 3
+
+app:
+  name: go-web-app
+
+image:
+  repository: azizaman/go-web-app
+  tag: v2
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+service:
+  type: ClusterIP
+  protocol: TCP
+  port: 80
+  targetPort: 8080
+ingress:
+  enabled: true
+  className: nginx
+  path: /courses
+  pathType: Prefix
+  rewriteTarget: /courses
+
