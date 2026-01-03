@@ -43,7 +43,7 @@ jobs:
 
         steps:
             - name: checkout the code
-              uses: actions/chceckout@v3
+              uses: actions/checkout@v4
             - name: set up docker buildx
               uses: docker/setup-buildx-action@v2
             - name: log in to teh docker hub
